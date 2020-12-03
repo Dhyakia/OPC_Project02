@@ -1,72 +1,75 @@
 import requests
 from bs4 import BeautifulSoup
 
-liList = []
+# TODO : Now that it browse every page of any given category, make it browse EVERY category
+# TODO : I might also need to change the way the scripts check the number of page
 
-for i in range(1, 51):
-    url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
+for page_number in range(10):
+    url = 'http://books.toscrape.com/catalogue/category/books/default_15/page-' + str(page_number) + '.html'
+    print(page_number)
     response = requests.get(url)
 
     if response.ok:
-        print('Page: ' + str(i) + ' links is being stored')
         soup = BeautifulSoup(response.text, 'lxml')
-        h3s = soup.findAll('h3')
 
-        for h3 in h3s:
-            a = h3.find('a')
-            link = a['href']
-            liList.append('http://books.toscrape.com/catalogue/' + link)
+        link_list = []
+        category_index = soup.find('div', {'class': 'page-header action'}).find('h1')
+        result_per_page = soup.find('form', {'class': 'form-horizontal'}).find('strong')
+        book_link_box = soup.findAll('h3')
 
-            with open('urlsOutput.txt', 'w') as file:
-                for link in liList:
-                    file.write(link + '\n')
+        for h3 in book_link_box:
+            link_box = h3.find('a')
+            link = link_box['href']
+            link_list.append(url + '/../' + link)
 
+        with open((category_index.text + '_links.txt'), 'w') as links_file:
+            for link in link_list:
+                links_file.write(link + '\n')
 
-with open('urlsOutput.txt', 'r') as file:
-    with open('scrapsOutput.CSV', 'w') as scraps:
-        scraps.write('product_page_url,universal_ product_code,title,price_including_tax,price_excluding_tax,'
-                     'number_available,product_description,category,review_rating,image_url\n')
+        with open((category_index.text + '_links.txt'), 'r') as file:
+            with open((category_index.text + '_scraps_output.CSV'), 'w', encoding='utf-8') as scraps:
 
-    for row in file:
-        url = row.strip()
-        response = requests.get(url)
+                # TODO : Because it get open every loop as 'w", every page overwrite itself
 
-        if response.ok:
-            soup = BeautifulSoup(response.text, 'lxml')
+                for row in file:
+                    url2 = row.strip()
+                    response2 = requests.get(url2)
 
-            product_page_url = url
-            print(product_page_url)
+                    if response2.ok:
+                        soup = BeautifulSoup(response2.text, 'lxml')
 
-            upc = soup.find('td')
-            print(upc.text)
+                        # TODO : titles should be set-up when the CSV is created(), not every iteration
 
-            title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')
-            print(title.text)
+                        scraps.write('product_page_url%universal_product_code%title%price_including_tax'
+                                     '%price_excluding_tax%number_available%product_description%category'
+                                     '%review_rating%image_url\n')
 
-            price_including_tax = soup.find('td').find_next('td').find_next('td').find_next('td')
-            print(price_including_tax.text)
+                        # url from above
+                        upc = soup.find('td')
+                        title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')
+                        price_including_tax = soup.find('td').find_next('td').find_next('td').find_next('td')
+                        price_excluding_tax = soup.find('td').find_next('td').find_next('td')
+                        number_available = soup.find('td')\
+                            .find_next('td').find_next('td').find_next('td').find_next('td').find_next('td')
+                        product_description = soup.find('article', {'class': 'product_page'})\
+                            .find_next('p').find_next('p').find_next('p').find_next('p')
+                        category = soup.find('ul', {'class': 'breadcrumb'})\
+                            .find('li').find('a').find_next('a').find_next('a')
+                        review_rating_tag = soup.find('div', {'class': 'col-sm-6 product_main'}).find('p')\
+                            .find_next('p').find_next('p')
+                        review_rating = review_rating_tag['class']
+                        image_url_tag = soup.find('div', {'class': 'item active'}).find('img')
+                        image_url = image_url_tag['src']
 
-            price_excluding_tax = soup.find('td').find_next('td').find_next('td')
-            print(price_excluding_tax.text)
+                        scraps.write(str(url2) + '%'
+                                     + str(upc.text) + '%'
+                                     + title.text + '%'
+                                     + str(price_including_tax.text) + '%'
+                                     + str(price_excluding_tax.text) + '%'
+                                     + str(number_available.text) + '%'
+                                     + str(product_description.text) + '%'
+                                     + str(category.text) + '%'
+                                     + str(review_rating[1]) + '%'
+                                     + str(image_url) + '\n')
 
-            number_available = soup.find('p', {'class': 'instock availability'})
-            print(number_available.text)
-
-            product_meta_description = soup.find('head').find('meta', {'name': 'description'})
-            product_description = product_meta_description['content']
-            print(product_description)
-
-            category = soup.find('ul', {'class': 'breadcrumb'}).find('li').find('a').find_next('a').find_next('a')
-            print(category.text)
-
-            review_star = soup.find('div', {'class': 'col-sm-6 product_main'}).find('p').find_next('p').find_next('p')
-            review_rating = review_star['class']
-            print(review_rating)
-
-            image_source = soup.find('div', {'class': 'item active'}).find('img')
-            image_url = image_source['src']
-            print(image_url)
-
-            scraps.write(product_page_url + ',' + upc.text + ',' + title.text + ',' + price_including_tax.text + ','
-                         + price_excluding_tax.text + ',' + number_available + ',' + product_description + ',' +
-                         category.text + ',' + review_rating + ',' + image_url.text + '\n')
+                        print('Loop successful')

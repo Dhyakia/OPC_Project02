@@ -2,30 +2,20 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 
-# TODO : Loop that goes trough all the category
-# TODO : Change the delimitation character in the csv file (QUOTE.MINIMAL) from import csv - % cause some things to bug
-# TODO : Finally, Download the picture of the item being scrapped
+# TODO : Loops that goes trough all the pages
+# TODO : Loops that goes trough all categories
+# TODO : Finally, extract the images of the scrapped page
+
 
 url = 'http://books.toscrape.com/catalogue/category/books/default_15/index.html'
 response = requests.get(url)
 link_list = []
 
-# TODO : For every category in the website / class=nav nav-list / Where 1 is index and 2 to 51 are category
-
 if response.ok:
     soup = BeautifulSoup(response.text, 'lxml')
     category_name = soup.find('div', {'class': 'page-header action'}).find('h1')
-
     result_per_page = soup.find('form', {'class': 'form-horizontal'}).find('strong')
-    page_number = 1
-
     book_link_box = soup.findAll('h3')
-    '''
-    if int(result_per_page.text) > 20:
-        for result_per_page in soup:
-            url = (url + '/../page-' + str(page_number + 1) + '.html')
-            page_number += 1
-            print(url)'''
 
     for h3 in book_link_box:
         link_box = h3.find('a')
@@ -37,16 +27,15 @@ if response.ok:
                 links_file.write(link + '\n')
 
     with open((category_name.text + '_links.txt'), 'r') as file:
-        with open((category_name.text + '_scraps_output.CSV'), 'w', encoding='utf-8') as scraps:
+        with open((category_name.text + '_scraps_output.CSV'), 'w', encoding='latin1', newline='') as scraps:
 
-            # TODO : Need to find a way to "quote" without getting out of cell
+            writer = csv.writer(scraps, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
 
-            writer = csv.writer(scraps, quotechar='"', delimiter=',', quoting=csv.QUOTE_MINIMAL)
+            header = "product_page_url", "universal_product_code", "title", "price_including_tax", \
+                     "price_excluding_tax", "number_available", "product_description", "category", "review_rating", \
+                     "image_url", "\n"
 
-            writer.writerow("product_page_url" + "," + "universal_product_code" + "," + "title" + ","
-                            + "price_including_tax" + "," + "price_excluding_tax" + "," + "number_available" + ","
-                            + "product_description" + "," + "category" + "," + "review_rating" + "," + "image_url"
-                            + "\n")
+            writer.writerow(header)
 
             for row in file:
                 url_2 = row.strip()
@@ -72,16 +61,12 @@ if response.ok:
                     image_url_tag = soup.find('div', {'class': 'item active'}).find('img')
                     image_url = image_url_tag['src']
 
-                    writer.writerow('' + str(url_2) + ","
-                                    + str(upc.text) + ","
-                                    + title.text + ","
-                                    + str(price_including_tax.text) + ","
-                                    + str(price_excluding_tax.text) + ","
-                                    + str(number_available.text) + ","
-                                    + str(product_description.text) + ","
-                                    + str(category.text) + ","
-                                    + str(review_rating[1]) + ","
-                                    + str(image_url) + ","
-                                    + '\n')
+                    scrap_data = f"{str(url_2)}", f"{str(upc.text)}", f"{str(title.text)}",\
+                                 f"{str(price_including_tax.text)}", f"{str(price_excluding_tax.text)}", \
+                                 f"{str(number_available.text)}", f"{str(product_description.text)}", \
+                                 f"{str(category.text)}", f"{str(review_rating[1])}", \
+                                 f"{str(image_url)}", "\n"
+
+                    writer.writerow(scrap_data)
 
                     print('Loop successful')

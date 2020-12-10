@@ -1,11 +1,13 @@
 import requests
+'''
+import wget
+'''
 import csv
 from bs4 import BeautifulSoup
 
+# Keeping the image download part away until the end (for speed-testing reason) (import + part below)
 # TODO : Loops that goes trough all the pages
 # TODO : Loops that goes trough all categories
-# TODO : Finally, extract the images of the scrapped page
-
 
 url = 'http://books.toscrape.com/catalogue/category/books/default_15/index.html'
 response = requests.get(url)
@@ -59,7 +61,8 @@ if response.ok:
                         .find_next('p').find_next('p')
                     review_rating = review_rating_tag['class']
                     image_url_tag = soup.find('div', {'class': 'item active'}).find('img')
-                    image_url = image_url_tag['src']
+                    image_url_suffix = image_url_tag['src']
+                    image_url = (url_2 + '/../' + image_url_suffix)
 
                     scrap_data = f"{str(url_2)}", f"{str(upc.text)}", f"{str(title.text)}",\
                                  f"{str(price_including_tax.text)}", f"{str(price_excluding_tax.text)}", \
@@ -68,5 +71,7 @@ if response.ok:
                                  f"{str(image_url)}", "\n"
 
                     writer.writerow(scrap_data)
-
-                    print('Loop successful')
+                    '''
+                    image_data = wget.download(image_url)
+                    '''
+                    print(' Loop successful')

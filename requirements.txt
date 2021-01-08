@@ -1,0 +1,13 @@
+Package        Version
+-------------- ---------
+beautifulsoup4 4.9.3
+bs4            0.0.1
+certifi        2020.11.8
+chardet        3.0.4
+idna           2.10
+lxml           4.6.2
+pip            20.2.3
+requests       2.25.0
+setuptools     49.2.1
+soupsieve      2.0.1
+wget           3.2

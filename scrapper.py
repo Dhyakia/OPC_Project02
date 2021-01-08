@@ -1,8 +1,6 @@
 import requests
-'''
 import csv
 import wget
-'''
 from bs4 import BeautifulSoup
 
 starting_url = 'http://books.toscrape.com/'
@@ -10,7 +8,7 @@ response = requests.get(starting_url)
 
 if response.ok:
     link_list = []
-    page_counter = 1
+    page_counter = 0
     soup = BeautifulSoup(response.text, 'lxml')
     category_link_list = soup.find('ul', {'class': 'nav nav-list'}).find('li').find('ul').findAll('li')
 
@@ -24,33 +22,6 @@ if response.ok:
         category_name = fresh_soup.find('li', {'class': 'active'})
 
         next_page_banner_exist = fresh_soup.find('li', {'class': 'next'})
-
-        if next_page_banner_exist:
-            multiple_page_url = (category_url + '/../page-' + str(page_counter) + '.html')
-
-            page_check = 1
-
-            # i know there's a next page
-            # i've created a new URL, ready to be modified;
-            # 1 - now i need to add +1 to the counter
-            # 2 - make the new page the soup
-            # 3 - check if there's a next page button in the new concatenated page
-            # 3.1 - if yes, repeat
-            # 3.2 - if no, break the loop
-
-            while page_check:
-                page_counter += 1
-                new_page_response = requests.get(multiple_page_url)
-                new_page_soup = BeautifulSoup(new_page_response.text, 'lxml')
-
-                checker = new_page_soup.find('li', {'class': 'next'})
-
-                if checker:
-                    print('next page ...')
-                    # why does it loop forever here ?
-                else:
-                    page_check = 0
-                    page_counter = 0
 
         book_link_box = fresh_soup.findAll('h3')
 

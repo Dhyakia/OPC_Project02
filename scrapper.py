@@ -8,7 +8,7 @@ response = requests.get(starting_url)
 
 if response.ok:
     link_list = []
-    page_counter = 0
+    page_counter = 1
     soup = BeautifulSoup(response.text, 'lxml')
     category_link_list = soup.find('ul', {'class': 'nav nav-list'}).find('li').find('ul').findAll('li')
 
@@ -22,6 +22,21 @@ if response.ok:
         category_name = fresh_soup.find('li', {'class': 'active'})
 
         next_page_banner_exist = fresh_soup.find('li', {'class': 'next'})
+
+        if next_page_banner_exist:
+            loop_condition = 1
+
+            while loop_condition == 1:
+                multi_page_url = (category_url + '/../page-' + str(page_counter) + '.html')
+                next_page_requests = requests.get(multi_page_url)
+                fresh_soup = BeautifulSoup(next_page_requests.text, 'lxml')
+                next_button_check = fresh_soup.find('li', {'class': 'next'})
+
+                if next_button_check:
+                    page_counter += 1
+                else:
+                    loop_condition = 0
+                    page_counter = 1
 
         book_link_box = fresh_soup.findAll('h3')
 

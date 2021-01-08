@@ -28,9 +28,23 @@ if response.ok:
 
             while loop_condition == 1:
                 multi_page_url = (category_url + '/../page-' + str(page_counter) + '.html')
+
                 next_page_requests = requests.get(multi_page_url)
                 fresh_soup = BeautifulSoup(next_page_requests.text, 'lxml')
+
                 next_button_check = fresh_soup.find('li', {'class': 'next'})
+
+                book_link_box = fresh_soup.findAll('h3')
+
+                for book_tag in book_link_box:
+                    book_box = book_tag.find('a')
+                    book_link = book_box['href']
+                    book_link_updated = book_link.replace('../../../', '')
+                    link_list.append('http://books.toscrape.com/catalogue/' + book_link_updated)
+
+                    with open('Books_to_scrap_items_links.txt', 'w') as links_file:
+                        for link in link_list:
+                            links_file.write(link + '\n')
 
                 if next_button_check:
                     page_counter += 1
@@ -43,56 +57,56 @@ if response.ok:
         for book_tag in book_link_box:
             book_box = book_tag.find('a')
             book_link = book_box['href']
-            link_list.append(category_url + '/../' + book_link)
+            book_link_updated = book_link.replace('../../../', '')
+            link_list.append('http://books.toscrape.com/catalogue/' + book_link_updated)
 
             with open('Books_to_scrap_items_links.txt', 'w') as links_file:
                 for link in link_list:
                     links_file.write(link + '\n')
-                    '''
-    
-                with open('Books_to_scrap_items_links.txt', 'r') as file:
-                    with open((category_name.text + '_scraps_output.CSV'), 'w', encoding='latin1', newline='') as scraps:
-    
-                        writer = csv.writer(scraps, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
-    
-                        header = "product_page_url", "universal_product_code", "title", "price_including_tax", \
-                                 "price_excluding_tax", "number_available", "product_description", "category", \
-                                 "review_rating", "image_url", "\n"
-    
-                        writer.writerow(header)
-    
-                        for row in file:
-                            url_2 = row.strip()
-                            response2 = requests.get(url_2)
-    
-                            if response2.ok:
-                                soup = BeautifulSoup(response2.text, 'lxml')
-    
-                                upc = soup.find('td')
-                                title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')
-                                price_including_tax = soup.find('td').find_next('td').find_next('td').find_next('td')
-                                price_excluding_tax = soup.find('td').find_next('td').find_next('td')
-                                number_available = soup.find('td')\
-                                    .find_next('td').find_next('td').find_next('td').find_next('td').find_next('td')
-                                product_description = soup.find('article', {'class': 'product_page'})\
-                                    .find_next('p').find_next('p').find_next('p').find_next('p')
-                                category = soup.find('ul', {'class': 'breadcrumb'})\
-                                    .find('li').find('a').find_next('a').find_next('a')
-                                review_rating_tag = soup.find('div', {'class': 'col-sm-6 product_main'}).find('p')\
-                                    .find_next('p').find_next('p')
-                                review_rating = review_rating_tag['class']
-                                image_url_tag = soup.find('div', {'class': 'item active'}).find('img')
-                                image_url_suffix = image_url_tag['src']
-                                image_url = (url_2 + '/../' + image_url_suffix)
-    
-                                scrap_data = f"{str(url_2)}", f"{str(upc.text)}", f"{str(title.text)}",\
-                                             f"{str(price_including_tax.text)}", f"{str(price_excluding_tax.text)}", \
-                                             f"{str(number_available.text)}", f"{str(product_description.text)}", \
-                                             f"{str(category.text)}", f"{str(review_rating[1])}", \
-                                             f"{str(image_url)}", "\n"
-    
-                                writer.writerow(scrap_data)
-                                
-                                image_data = wget.download(image_url)
-                                
-                                print(' Loop successful')'''
+
+'''
+with open('Books_to_scrap_items_links.txt', 'r') as file:
+    with open((category_name.text + '_scraps_output.CSV'), 'w', encoding='latin1', newline='') as scraps:
+
+        writer = csv.writer(scraps, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
+
+        header = "product_page_url", "universal_product_code", "title", "price_including_tax", \
+                 "price_excluding_tax", "number_available", "product_description", "category", \
+                 "review_rating", "image_url", "\n"
+
+        writer.writerow(header)
+
+        for row in file:
+            url_2 = row.strip()
+            response2 = requests.get(url_2)
+
+            if response2.ok:
+                soup = BeautifulSoup(response2.text, 'lxml')
+
+                upc = soup.find('td')
+                title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')
+                price_including_tax = soup.find('td').find_next('td').find_next('td').find_next('td')
+                price_excluding_tax = soup.find('td').find_next('td').find_next('td')
+                number_available = soup.find('td')\
+                    .find_next('td').find_next('td').find_next('td').find_next('td').find_next('td')
+                product_description = soup.find('article', {'class': 'product_page'})\
+                    .find_next('p').find_next('p').find_next('p').find_next('p')
+                category = soup.find('ul', {'class': 'breadcrumb'})\
+                    .find('li').find('a').find_next('a').find_next('a')
+                review_rating_tag = soup.find('div', {'class': 'col-sm-6 product_main'}).find('p')\
+                    .find_next('p').find_next('p')
+                review_rating = review_rating_tag['class']
+                image_url_tag = soup.find('div', {'class': 'item active'}).find('img')
+                image_url_suffix = image_url_tag['src']
+                image_url = (url_2 + '/../' + image_url_suffix)
+
+                scrap_data = f"{str(url_2)}", f"{str(upc.text)}", f"{str(title.text)}",\
+                             f"{str(price_including_tax.text)}", f"{str(price_excluding_tax.text)}", \
+                             f"{str(number_available.text)}", f"{str(product_description.text)}", \
+                             f"{str(category.text)}", f"{str(review_rating[1])}", \
+                             f"{str(image_url)}", "\n"
+
+                writer.writerow(scrap_data)
+                
+                image_data = wget.download(image_url)
+'''

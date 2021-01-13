@@ -69,7 +69,7 @@ if response.ok:
                         links_file.write(link + '\n')
 
         with open('Books_to_scrap_items_links.txt', 'r') as file:
-            with open((category_name.text + '_scraps_output.CSV'), 'w', encoding='latin1', newline='') as scraps:
+            with open(('CSV/' + category_name.text + '_scraps_output.CSV'), 'w', encoding='latin1', newline='') as scraps:
 
                 writer = csv.writer(scraps, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
 
@@ -85,6 +85,8 @@ if response.ok:
 
                     if response2.ok:
                         soup = BeautifulSoup(response2.text, 'lxml')
+
+                        # dic Writer
 
                         upc = soup.find('td')
                         title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')
@@ -112,9 +114,13 @@ if response.ok:
                         writer.writerow(scrap_data)
 
                         image_data = wget.download(image_url)
-
                         string_title = str(title.text)
                         string_encode = string_title.encode("ascii", 'ignore')
                         string_decode = string_encode.decode()
+                        os.rename(image_data, 'Images/' + string_decode.replace("<", "").replace(">", "")
+                                  .replace(":", "").replace('"', "").replace("/", "").replace("\\", "")
+                                  .replace("|", "").replace("?", "").replace("*", "") + ".jpg")
 
-                        os.rename(image_data, string_decode.replace(":", "") + '.jpg')
+else:
+    print("ERROR || connection error \n")
+    print("ERROR || Html content : " + response.content)

@@ -1,5 +1,6 @@
 import requests
 import csv
+import os
 import wget
 from bs4 import BeautifulSoup
 
@@ -110,10 +111,10 @@ if response.ok:
 
                         writer.writerow(scrap_data)
 
-                        # image pulled name are gibberish -> need a naming scheme for clarity
-                        # w-get can get options [ -o to select output file/directory]
-                        # might need to find another way to get the image
-
-                        '''       
                         image_data = wget.download(image_url)
-                        '''
+
+                        string_title = str(title.text)
+                        string_encode = string_title.encode("ascii", 'ignore')
+                        string_decode = string_encode.decode()
+
+                        os.rename(image_data, string_decode.replace(":", "") + '.jpg')

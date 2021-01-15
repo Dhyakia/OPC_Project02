@@ -7,8 +7,6 @@ from bs4 import BeautifulSoup
 starting_url = 'http://books.toscrape.com/'
 response = requests.get(starting_url)
 
-# need to re-write using methods
-
 if response.ok:
     page_counter = 1
     soup = BeautifulSoup(response.text, 'lxml')
@@ -86,20 +84,16 @@ if response.ok:
                     if response2.ok:
                         soup = BeautifulSoup(response2.text, 'lxml')
 
-                        # dic Writer
+                        # Could use a dictionary to speed-up the program
 
                         upc = soup.find('td')
                         title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')
                         price_including_tax = soup.find('td').find_next('td').find_next('td').find_next('td')
                         price_excluding_tax = soup.find('td').find_next('td').find_next('td')
-                        number_available = soup.find('td')\
-                            .find_next('td').find_next('td').find_next('td').find_next('td').find_next('td')
-                        product_description = soup.find('article', {'class': 'product_page'})\
-                            .find_next('p').find_next('p').find_next('p').find_next('p')
-                        category = soup.find('ul', {'class': 'breadcrumb'})\
-                            .find('li').find('a').find_next('a').find_next('a')
-                        review_rating_tag = soup.find('div', {'class': 'col-sm-6 product_main'}).find('p')\
-                            .find_next('p').find_next('p')
+                        number_available = soup.find('td').find_next('td').find_next('td').find_next('td').find_next('td').find_next('td')
+                        product_description = soup.find('article', {'class': 'product_page'}).find_next('p').find_next('p').find_next('p').find_next('p')
+                        category = soup.find('ul', {'class': 'breadcrumb'}).find('li').find('a').find_next('a').find_next('a')
+                        review_rating_tag = soup.find('div', {'class': 'col-sm-6 product_main'}).find('p').find_next('p').find_next('p')
                         review_rating = review_rating_tag['class']
                         image_url_tag = soup.find('div', {'class': 'item active'}).find('img')
                         image_url_suffix = image_url_tag['src']
@@ -113,10 +107,11 @@ if response.ok:
 
                         writer.writerow(scrap_data)
 
-                        image_data = wget.download(image_url)
+                        image_data = wget.download(image_url, bar=None)
                         string_title = str(title.text)
                         string_encode = string_title.encode("ascii", 'ignore')
                         string_decode = string_encode.decode()
+                        # fixe if files already exist (erase ?)
                         os.rename(image_data, 'Images/' + string_decode.replace("<", "").replace(">", "")
                                   .replace(":", "").replace('"', "").replace("/", "").replace("\\", "")
                                   .replace("|", "").replace("?", "").replace("*", "") + ".jpg")

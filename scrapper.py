@@ -111,8 +111,7 @@ if response.ok:
                         string_title = str(title.text)
                         string_encode = string_title.encode("ascii", 'ignore')
                         string_decode = string_encode.decode()
-                        # fixe if files already exist (erase ?)
-                        os.rename(image_data, 'Images/' + string_decode.replace("<", "").replace(">", "")
+                        os.replace(image_data, 'Images/' + string_decode.replace("<", "").replace(">", "")
                                   .replace(":", "").replace('"', "").replace("/", "").replace("\\", "")
                                   .replace("|", "").replace("?", "").replace("*", "") + ".jpg")
 

@@ -41,7 +41,7 @@ référer vous à la documentation : https://virtualenv.pypa.io/en/latest/user_guid
 Félicitation, il ne reste plus qu'à lancer le programme !
 
 ## Utilisation
-<b>ATTENTION</b> : Avant de lancer le programme, soyez sûr d'avoir activé [l'environnement virtuel](#Mise-en-place-et-activation) ! 
+<b>ATTENTION</b> : Avant de lancer le programme, soyez sûr d'avoir activé l'environnement virtuel ! 
 
 Une fois activé, entrez la commande "python scrapper.py". \
 Attendez que le programme ais terminé avant d'interagir avec les éléments

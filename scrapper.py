@@ -9,7 +9,7 @@ response = requests.get(starting_url)
 
 if response.ok:
     page_counter = 1
-    soup = BeautifulSoup(response.text, 'lxml')
+    soup = BeautifulSoup(response.content.decode("utf-8"), 'lxml')
     category_link_list = soup.find('ul', {'class': 'nav nav-list'}).find('li').find('ul').findAll('li')
 
     for category_tag in category_link_list:
@@ -31,7 +31,7 @@ if response.ok:
                 multi_page_url = (category_url + '/../page-' + str(page_counter) + '.html')
 
                 next_page_requests = requests.get(multi_page_url)
-                fresh_soup = BeautifulSoup(next_page_requests.text, 'lxml')
+                fresh_soup = BeautifulSoup(next_page_requests.text, 'html.parser')
 
                 next_button_check = fresh_soup.find('li', {'class': 'next'})
 
@@ -65,11 +65,7 @@ if response.ok:
                     links_file.write(link + '\n')
 
         with open('Books_to_scrap_items_links.txt', 'r') as file:
-            with open(('CSV/' + category_name.text + '_scraps_output.CSV'), 'w', encoding='latin1', newline='') as scraps:
-
-                # Why do i get weird character when i encode in utf-8 ?
-                # Why does it work in latin1 ?
-                # And why, when encoded in latin1, it somehow get encoded in utf-8 correctly ?!
+            with open(('CSV/' + category_name.text + '_scraps_output.CSV'), 'w', encoding='utf-8', newline='') as scraps:
 
                 writer = csv.writer(scraps, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
 
@@ -84,7 +80,7 @@ if response.ok:
                     response2 = requests.get(url_2)
 
                     if response2.ok:
-                        soup = BeautifulSoup(response2.text, 'lxml')
+                        soup = BeautifulSoup(response2.content.decode("utf-8"), 'lxml')
 
                         upc = soup.find('td')
                         title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')

@@ -93,7 +93,8 @@ if response.ok:
                         review_rating = review_rating_tag['class']
                         image_url_tag = soup.find('div', {'class': 'item active'}).find('img')
                         image_url_suffix = image_url_tag['src']
-                        image_url = (url_2 + '/../' + image_url_suffix)
+                        image_url_updated = image_url_suffix.replace('../../', '')
+                        image_url = ("https://books.toscrape.com/" + image_url_updated)
 
                         scrap_data = f"{str(url_2)}", f"{str(upc.text)}", f"{str(title.text)}",\
                                      f"{str(price_including_tax.text)}", f"{str(price_excluding_tax.text)}", \
@@ -102,14 +103,14 @@ if response.ok:
                                      f"{str(image_url)}", "\n"
 
                         writer.writerow(scrap_data)
-                        '''
+
                         image_data = wget.download(image_url, bar=None)
                         string_title = str(title.text)
                         string_encode = string_title.encode("ascii", 'ignore')
                         string_decode = string_encode.decode()
                         os.replace(image_data, 'Images/' + string_decode.replace("<", "").replace(">", "")
                                    .replace(":", "").replace('"', "").replace("/", "").replace("\\", "")
-                                   .replace("|", "").replace("?", "").replace("*", "") + ".jpg")'''
+                                   .replace("|", "").replace("?", "").replace("*", "") + ".jpg")
 
 else:
     print("ERROR || connection error")

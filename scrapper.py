@@ -37,15 +37,14 @@ if response.ok:
 
                 book_link_box = fresh_soup.findAll('h3')
 
-                for book_tag in book_link_box:
-                    book_box = book_tag.find('a')
-                    book_link = book_box['href']
-                    book_link_updated = book_link.replace('../../../', '')
-                    link_list.append('http://books.toscrape.com/catalogue/' + book_link_updated)
-
-                    with open('Books_to_scrap_items_links.txt', 'w') as links_file:
-                        for link in link_list:
-                            links_file.write(link + '\n')
+                with open('Books_to_scrap_items_links.txt', 'w') as links_file:
+                    for book_tag in book_link_box:
+                        book_box = book_tag.find('a')
+                        book_link = book_box['href']
+                        book_link_updated = book_link.replace('../../../', '')
+                        link_list.append('http://books.toscrape.com/catalogue/' + book_link_updated)
+                    for link in link_list:
+                        links_file.write(link + '\n')
 
                 if next_button_check:
                     page_counter += 1
@@ -56,15 +55,14 @@ if response.ok:
         else:
             book_link_box = fresh_soup.findAll('h3')
 
-            for book_tag in book_link_box:
-                book_box = book_tag.find('a')
-                book_link = book_box['href']
-                book_link_updated = book_link.replace('../../../', '')
-                link_list.append('http://books.toscrape.com/catalogue/' + book_link_updated)
-
-                with open('Books_to_scrap_items_links.txt', 'w') as links_file:
-                    for link in link_list:
-                        links_file.write(link + '\n')
+            with open('Books_to_scrap_items_links.txt', 'w') as links_file:
+                for book_tag in book_link_box:
+                    book_box = book_tag.find('a')
+                    book_link = book_box['href']
+                    book_link_updated = book_link.replace('../../../', '')
+                    link_list.append('http://books.toscrape.com/catalogue/' + book_link_updated)
+                for link in link_list:
+                    links_file.write(link + '\n')
 
         with open('Books_to_scrap_items_links.txt', 'r') as file:
             with open(('CSV/' + category_name.text + '_scraps_output.CSV'), 'w', encoding='latin1', newline='') as scraps:
@@ -83,8 +81,6 @@ if response.ok:
 
                     if response2.ok:
                         soup = BeautifulSoup(response2.text, 'lxml')
-
-                        # Could use a dictionary to speed-up the program
 
                         upc = soup.find('td')
                         title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')
@@ -106,15 +102,14 @@ if response.ok:
                                      f"{str(image_url)}", "\n"
 
                         writer.writerow(scrap_data)
-
+                        '''
                         image_data = wget.download(image_url, bar=None)
                         string_title = str(title.text)
                         string_encode = string_title.encode("ascii", 'ignore')
                         string_decode = string_encode.decode()
                         os.replace(image_data, 'Images/' + string_decode.replace("<", "").replace(">", "")
-                                  .replace(":", "").replace('"', "").replace("/", "").replace("\\", "")
-                                  .replace("|", "").replace("?", "").replace("*", "") + ".jpg")
+                                   .replace(":", "").replace('"', "").replace("/", "").replace("\\", "")
+                                   .replace("|", "").replace("?", "").replace("*", "") + ".jpg")'''
 
 else:
-    print("ERROR || connection error \n")
-    print("ERROR || Html content : " + response.content)
+    print("ERROR || connection error")

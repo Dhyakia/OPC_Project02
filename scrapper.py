@@ -67,6 +67,10 @@ if response.ok:
         with open('Books_to_scrap_items_links.txt', 'r') as file:
             with open(('CSV/' + category_name.text + '_scraps_output.CSV'), 'w', encoding='latin1', newline='') as scraps:
 
+                # Why do i get weird character when i encode in utf-8 ?
+                # Why does it work in latin1 ?
+                # And why, when encoded in latin1, it somehow get encoded in utf-8 correctly ?!
+
                 writer = csv.writer(scraps, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
 
                 header = "product_page_url", "universal_product_code", "title", "price_including_tax", \

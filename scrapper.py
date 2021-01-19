@@ -9,7 +9,7 @@ response = requests.get(starting_url)
 
 if response.ok:
     page_counter = 1
-    soup = BeautifulSoup(response.content.decode("utf-8"), 'lxml')
+    soup = BeautifulSoup(response.text, 'lxml')
     category_link_list = soup.find('ul', {'class': 'nav nav-list'}).find('li').find('ul').findAll('li')
 
     for category_tag in category_link_list:

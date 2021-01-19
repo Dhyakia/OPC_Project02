@@ -31,7 +31,7 @@ if response.ok:
                 multi_page_url = (category_url + '/../page-' + str(page_counter) + '.html')
 
                 next_page_requests = requests.get(multi_page_url)
-                fresh_soup = BeautifulSoup(next_page_requests.text, 'html.parser')
+                fresh_soup = BeautifulSoup(next_page_requests.text, 'lxml')
 
                 next_button_check = fresh_soup.find('li', {'class': 'next'})
 

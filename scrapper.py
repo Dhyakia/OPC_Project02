@@ -96,11 +96,11 @@ if response.ok:
                         image_url_updated = image_url_suffix.replace('../../', '')
                         image_url = ("https://books.toscrape.com/" + image_url_updated)
 
-                        scrap_data = f"{str(url_2)}", f"{str(upc.text)}", f"{str(title.text)}",\
-                                     f"{str(price_including_tax.text)}", f"{str(price_excluding_tax.text)}", \
-                                     f"{str(number_available.text)}", f"{str(product_description.text)}", \
-                                     f"{str(category.text)}", f"{str(review_rating[1])}", \
-                                     f"{str(image_url)}", "\n"
+                        scrap_data = f"{url_2}", f"{upc.text}", f"{title.text}",\
+                                     f"{price_including_tax.text}", f"{price_excluding_tax.text}", \
+                                     f"{number_available.text}", f"{product_description.text}", \
+                                     f"{category.text}", f"{review_rating[1]}", \
+                                     f"{image_url}", "\n"
 
                         writer.writerow(scrap_data)
 

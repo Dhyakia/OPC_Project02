@@ -54,7 +54,7 @@ if response.ok:
 
         else:
             book_link_box = fresh_soup.findAll('h3')
-
+            # TODO - REDUNDANCY
             with open('Books_to_scrap_items_links.txt', 'w') as links_file:
                 for book_tag in book_link_box:
                     book_box = book_tag.find('a')
@@ -71,7 +71,7 @@ if response.ok:
 
                 header = "product_page_url", "universal_product_code", "title", "price_including_tax", \
                          "price_excluding_tax", "number_available", "product_description", "category", \
-                         "review_rating", "image_url", "\n"
+                         "review_rating", "image_url"
 
                 writer.writerow(header)
 
@@ -100,11 +100,12 @@ if response.ok:
                                      f"{price_including_tax.text}", f"{price_excluding_tax.text}", \
                                      f"{number_available.text}", f"{product_description.text}", \
                                      f"{category.text}", f"{review_rating[1]}", \
-                                     f"{image_url}", "\n"
+                                     f"{image_url}"
 
                         writer.writerow(scrap_data)
 
                         image_data = wget.download(image_url, bar=None)
+                        # TODO - find a cleaner way than encode/decode
                         string_title = str(title.text)
                         string_encode = string_title.encode("ascii", 'ignore')
                         string_decode = string_encode.decode()

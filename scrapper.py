@@ -9,6 +9,7 @@ response = requests.get(starting_url)
 
 if response.ok:
     page_counter = 1
+    ids = 1
     soup = BeautifulSoup(response.text, 'lxml')
     category_link_list = soup.find('ul', {'class': 'nav nav-list'}).find('li').find('ul').findAll('li')
 
@@ -54,7 +55,7 @@ if response.ok:
 
         else:
             book_link_box = fresh_soup.findAll('h3')
-            # TODO - REDUNDANCY
+
             with open('Books_to_scrap_items_links.txt', 'w') as links_file:
                 for book_tag in book_link_box:
                     book_box = book_tag.find('a')
@@ -69,7 +70,7 @@ if response.ok:
 
                 writer = csv.writer(scraps, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
 
-                header = "product_page_url", "universal_product_code", "title", "price_including_tax", \
+                header = "Ids", "product_page_url", "universal_product_code", "title", "price_including_tax", \
                          "price_excluding_tax", "number_available", "product_description", "category", \
                          "review_rating", "image_url"
 
@@ -81,7 +82,6 @@ if response.ok:
 
                     if response2.ok:
                         soup = BeautifulSoup(response2.content.decode("utf-8"), 'lxml')
-
                         upc = soup.find('td')
                         title = soup.find('div', {'class': 'col-sm-6 product_main'}).find('h1')
                         price_including_tax = soup.find('td').find_next('td').find_next('td').find_next('td')
@@ -96,16 +96,17 @@ if response.ok:
                         image_url_updated = image_url_suffix.replace('../../', '')
                         image_url = ("https://books.toscrape.com/" + image_url_updated)
 
-                        scrap_data = f"{url_2}", f"{upc.text}", f"{title.text}",\
+                        scrap_data = f"{ids}", f"{url_2}", f"{upc.text}", f"{title.text}",\
                                      f"{price_including_tax.text}", f"{price_excluding_tax.text}", \
                                      f"{number_available.text}", f"{product_description.text}", \
                                      f"{category.text}", f"{review_rating[1]}", \
                                      f"{image_url}"
 
                         writer.writerow(scrap_data)
+                        ids += 1
 
                         image_data = wget.download(image_url, bar=None)
-                        # TODO - find a cleaner way than encode/decode
+
                         string_title = str(title.text)
                         string_encode = string_title.encode("ascii", 'ignore')
                         string_decode = string_encode.decode()
